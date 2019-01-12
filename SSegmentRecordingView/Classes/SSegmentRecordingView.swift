@@ -71,16 +71,14 @@ import UIKit
     private var currentIndex = 0 {
         didSet {
             for (index, segment) in segments.enumerated() {
-                if (index <= currentIndex) {
-                    segment.layer.strokeEnd = 1.0
-                } else {
-                    segment.layer.strokeEnd = 0.0
-                }
-                
                 let separator = separators[index]
                 if (index < currentIndex) {
+                    segment.isOpened = false
+                    segment.layer.strokeEnd = 1.0
                     separator.layer.strokeEnd = 1.0
                 } else {
+                    segment.isOpened = true
+                    segment.layer.strokeEnd = 0.0
                     separator.layer.strokeEnd = 0.0
                 }
             }
@@ -231,6 +229,8 @@ import UIKit
 fileprivate class SSegment {
     var duration: TimeInterval = 0.0
     let layer = CAShapeLayer()
+    var isOpened: Bool = false
+    
     init(duration: TimeInterval = 0.0) {
         self.duration = duration
         layer.fillColor = UIColor.clear.cgColor
