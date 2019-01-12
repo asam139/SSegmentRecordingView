@@ -37,7 +37,6 @@ import UIKit
             let segment = SSegment(duration: duration)
             let separator = SSeparator()
             separator.layer.lineWidth = separatorWidth
-            segment.separator = separator
             
             segments.append(segment)
             separators.append(separator)
@@ -45,13 +44,10 @@ import UIKit
             layer.addSublayer(segment.layer)
             layer.addSublayer(separator.layer)
         }
+        updateColors()
         
         // Set current to last
         currentIndex = durations.count
-        
-        updateColors()
-        
-        setNeedsLayout()
     }
     
     @objc public var currentDuration : TimeInterval {
@@ -235,7 +231,6 @@ import UIKit
 fileprivate class SSegment {
     var duration: TimeInterval = 0.0
     let layer = CAShapeLayer()
-    weak var separator: SSeparator?
     init(duration: TimeInterval = 0.0) {
         self.duration = duration
         layer.fillColor = UIColor.clear.cgColor
