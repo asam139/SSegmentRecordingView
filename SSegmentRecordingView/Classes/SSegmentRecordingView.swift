@@ -25,14 +25,15 @@ import UIKit
                 time += duration
                 
                 let segment = SSegment()
-                layer.addSublayer(segment.layer)
-                segments.append(segment)
-                
                 let separator = SSeparator()
                 separator.layer.lineWidth = separatorWidth
-                separator.layer.zPosition = 10
-                layer.addSublayer(separator.layer)
+                segment.separator = separator
+                
+                segments.append(segment)
                 separators.append(separator)
+                
+                layer.addSublayer(segment.layer)
+                layer.addSublayer(separator.layer)
             }
             
             // Set current to last
@@ -60,28 +61,7 @@ import UIKit
         }
     }
     
-    
-    var isPaused: Bool = false {
-        didSet {
-            if isPaused {
-                for segment in segments {
-                    let layer = segment.layer
-                    let pausedTime = layer.convertTime(CACurrentMediaTime(), from: nil)
-                    layer.speed = 0.0
-                    layer.timeOffset = pausedTime
-                }
-            } else {
-                let segment = segments[currentIndex]
-                let layer = segment.layer
-                let pausedTime = layer.timeOffset
-                layer.speed = 1.0
-                layer.timeOffset = 0.0
-                layer.beginTime = 0.0
-                let timeSincePause = layer.convertTime(CACurrentMediaTime(), from: nil) - pausedTime
-                layer.beginTime = timeSincePause
-            }
-        }
-    }
+    // MARK: - Private
     
     private var maxDuration: TimeInterval = 5.0
     private var segments = [SSegment]()
@@ -96,13 +76,18 @@ import UIKit
     private var currentIndex = 0 {
         didSet {
             for (index, _) in segmentsDuration.enumerated() {
+                let segment = segments[index]
                 if (index <= currentIndex) {
-                    let segment = segments[index]
                     segment.layer.strokeEnd = 1.0
-                    
                 } else {
-                    let segment = segments[index]
                     segment.layer.strokeEnd = 0.0
+                }
+                
+                let separator = separators[index]
+                if (index < currentIndex) {
+                    separator.layer.strokeEnd = 1.0
+                } else {
+                    separator.layer.strokeEnd = 0.0
                 }
             }
         }
@@ -205,68 +190,42 @@ import UIKit
     }
     
     
-    //MARK: -
+    //MARK: - Animate
     
     public func startAnimation() {
-        layoutSubviews()
         animate()
     }
     
     private func animate(animationIndex: Int = 0) {
-        guard animationIndex < segments.count else {
+        guard animationIndex < segmentsDuration.count else {
+            currentIndex = animationIndex <= segmentsDuration.count ? currentIndex + 1 : segmentsDuration.count
             return
         }
         currentIndex = animationIndex
         
-        let nextSegment = segments[currentIndex]
-        self.isPaused = false // no idea why we have to do this here, but it fixes everything :D
-        
-
+        let segment = segments[currentIndex]
         CATransaction.begin()
         CATransaction.setCompletionBlock { [weak self] in
             self?.next()
         }
         
         let anim = CABasicAnimation(keyPath: "strokeEnd")
-        anim.duration = 2.0
+        anim.duration = segmentsDuration[animationIndex]
         anim.fromValue = 0.0
         anim.toValue = 1.0
-        nextSegment.layer.add(anim, forKey: "bounds")
+        segment.layer.add(anim, forKey: "bounds")
         CATransaction.commit()
     }
     
-
     private func next() {
         let newIndex = currentIndex + 1
-        if newIndex < segments.count {
-            animate(animationIndex: newIndex)
-        } else {
-    
-        }
-    }
-    
-    func skip() {
-        let currentSegment = segments[currentIndex]
-        //currentSegment.view.frame.size.width = currentSegment.view.frame.width
-        currentSegment.layer.removeAllAnimations()
-        self.next()
-    }
-    
-    func rewind() {
-        let currentSegment = segments[currentIndex]
-        currentSegment.layer.removeAllAnimations()
-        currentSegment.layer.strokeEnd = 0.0
-        let newIndex = max(currentIndex - 1, 0)
-        let prevSegment = segments[newIndex]
-        prevSegment.layer.strokeEnd = 0.0
         animate(animationIndex: newIndex)
     }
-    
-    
 }
 
 fileprivate class SSegment {
     let layer = CAShapeLayer()
+    weak var separator: SSeparator?
     init() {
         layer.fillColor = UIColor.clear.cgColor
     }
@@ -276,6 +235,7 @@ fileprivate class SSeparator {
     let layer = CAShapeLayer()
     init() {
         layer.fillColor = UIColor.clear.cgColor
+        layer.zPosition = 10
     }
 }
 
