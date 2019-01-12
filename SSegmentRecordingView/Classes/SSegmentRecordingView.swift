@@ -25,7 +25,7 @@ import UIKit
                 time += duration
                 
                 let segment = SSegment()
-                addSubview(segment.view)
+                layer.addSublayer(segment.layer)
                 segments.append(segment)
                 
                 let separator = SSeparator()
@@ -68,14 +68,14 @@ import UIKit
         didSet {
             if isPaused {
                 for segment in segments {
-                    let layer = segment.view.layer
+                    let layer = segment.layer
                     let pausedTime = layer.convertTime(CACurrentMediaTime(), from: nil)
                     layer.speed = 0.0
                     layer.timeOffset = pausedTime
                 }
             } else {
                 let segment = segments[currentIndex]
-                let layer = segment.view.layer
+                let layer = segment.layer
                 let pausedTime = layer.timeOffset
                 layer.speed = 1.0
                 layer.timeOffset = 0.0
@@ -89,7 +89,20 @@ import UIKit
     private var maxDuration: TimeInterval = 5.0
     private var segments = [SSegment]()
     private var separators = [SSeparator]()
-    private var currentIndex = 0
+    private var currentIndex = 0 {
+        didSet {
+            for (index, _) in segmentsDuration.enumerated() {
+                if (index <= currentIndex) {
+                    let segment = segments[index]
+                    segment.layer.strokeEnd = 1.0
+                    
+                } else {
+                    let segment = segments[index]
+                    segment.layer.strokeEnd = 0.0
+                }
+            }
+        }
+    }
     
     // MARK: - Initializers
     
@@ -111,16 +124,20 @@ import UIKit
         self.layer.cornerRadius = 0.5 * self.bounds.height
     }
     
-    override public func layoutSubviews() {
-        super.layoutSubviews()
- 
+    override public func layoutSublayers(of layer: CALayer) {
+        
         var xOffset: CGFloat = 0
         for (index, segment) in segments.enumerated() {
             let percent = CGFloat(segmentsDuration[index]/maxDuration)
             let width = frame.width * percent
-            let segFrame = CGRect(x: xOffset, y: 0, width: width, height: frame.height)
-            segment.view.frame = segFrame
-            //segment.view.layer.cornerRadius = 0.5 * frame.height
+            
+            segment.layer.lineWidth = frame.height
+            segment.layer.frame = layer.bounds
+            
+            let bezierPath = UIBezierPath()
+            bezierPath.move(to: CGPoint(x: xOffset, y: 0.5 * frame.height))
+            bezierPath.addLine(to: CGPoint(x: xOffset + width, y: 0.5 * frame.height))
+            segment.layer.path = bezierPath.cgPath
             
             xOffset += width
             
@@ -130,11 +147,12 @@ import UIKit
         }
     }
     
+    
     //MARK: -  Segments
     
     private func clearSegments() {
         for segment in segments {
-            segment.view.removeFromSuperview()
+            segment.layer.removeFromSuperlayer()
         }
         segments.removeAll()
     }
@@ -160,7 +178,7 @@ import UIKit
     //MARK: - Colors
     private func updateSegmentColors() {
         for segment in segments {
-            segment.view.backgroundColor = segmentColor
+            segment.layer.strokeColor = segmentColor.cgColor
         }
     }
     
@@ -187,24 +205,22 @@ import UIKit
         guard animationIndex < segments.count else {
             return
         }
-        
-        let nextSegment = segments[animationIndex]
         currentIndex = animationIndex
+        
+        let nextSegment = segments[currentIndex]
         self.isPaused = false // no idea why we have to do this here, but it fixes everything :D
         
 
         CATransaction.begin()
-        
-        let anim = CABasicAnimation(keyPath: "bounds.size.width")
-        anim.duration = 2
-        anim.fromValue = 0
-        anim.toValue = nextSegment.view.frame.width
-        
         CATransaction.setCompletionBlock { [weak self] in
             self?.next()
         }
         
-        nextSegment.view.layer.add(anim, forKey: "bounds")
+        let anim = CABasicAnimation(keyPath: "strokeEnd")
+        anim.duration = 2.0
+        anim.fromValue = 0.0
+        anim.toValue = 1.0
+        nextSegment.layer.add(anim, forKey: "bounds")
         CATransaction.commit()
     }
     
@@ -220,18 +236,18 @@ import UIKit
     
     func skip() {
         let currentSegment = segments[currentIndex]
-        currentSegment.view.frame.size.width = currentSegment.view.frame.width
-        currentSegment.view.layer.removeAllAnimations()
+        //currentSegment.view.frame.size.width = currentSegment.view.frame.width
+        currentSegment.layer.removeAllAnimations()
         self.next()
     }
     
     func rewind() {
         let currentSegment = segments[currentIndex]
-        currentSegment.view.layer.removeAllAnimations()
-        currentSegment.view.frame.size.width = 0
+        currentSegment.layer.removeAllAnimations()
+        currentSegment.layer.strokeEnd = 0.0
         let newIndex = max(currentIndex - 1, 0)
         let prevSegment = segments[newIndex]
-        prevSegment.view.frame.size.width = 0
+        prevSegment.layer.strokeEnd = 0.0
         animate(animationIndex: newIndex)
     }
     
@@ -239,9 +255,9 @@ import UIKit
 }
 
 fileprivate class SSegment {
-    let view = UIView()
+    let layer = CAShapeLayer()
     init() {
-        view.layer.anchorPoint = CGPoint(x: 0, y: 0.5)
+        layer.fillColor = UIColor.clear.cgColor
     }
 }
 
