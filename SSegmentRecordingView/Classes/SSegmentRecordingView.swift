@@ -34,15 +34,8 @@ import UIKit
             }
             time += duration
             
-            let segment = SSegment(duration: duration)
-            segment.separator.layer.lineWidth = separatorWidth
-            
-            segments.append(segment)
-            
-            layer.addSublayer(segment.layer)
-            layer.addSublayer(segment.separator.layer)
+            _ = newSegment(duration: duration)
         }
-        updateColors()
         
         // Set current to last
         currentIndex = durations.count
@@ -68,6 +61,7 @@ import UIKit
     private var currentIndex = 0 {
         didSet {
             for (index, segment) in segments.enumerated() {
+                segment.layer.removeAllAnimations()
                 if (index < currentIndex) {
                     segment.isOpened = false
                 } else {
@@ -159,11 +153,10 @@ import UIKit
         updateSeparatorColors()
     }
     
-    
     //MARK: - Animate
     
     public func startAnimation() {
-        animate()
+        //animate()
     }
     
     private func animate(animationIndex: Int = 0) {
@@ -189,21 +182,60 @@ import UIKit
         CATransaction.commit()
     }
     
-    private func startNewSegment() {
-        
-    }
-    
-    func updateSegment(duration: TimeInterval) {
-        
-    }
-    
-    func closeSegment() {
-        
-    }
-    
     private func next() {
         let newIndex = currentIndex + 1
         animate(animationIndex: newIndex)
+    }
+    
+    //MARK: - Segments
+    
+    private func newSegment(duration: TimeInterval = 0.0) -> SSegment {
+        let segment = SSegment(duration: duration)
+        segment.separator.layer.lineWidth = separatorWidth
+        segment.layer.strokeColor = segmentColor.cgColor
+        segment.separator.layer.strokeColor = separatorColor.cgColor
+        
+        segments.append(segment)
+        layer.addSublayer(segment.layer)
+        layer.addSublayer(segment.separator.layer)
+        
+        return segment
+    }
+    
+    public func startNewSegment() {
+        let segment = newSegment(duration: 0.0)
+        segment.isOpened = true
+        currentIndex = segments.count - 1
+    }
+    
+    public func updateSegment(duration: TimeInterval) {
+        let segment = segments[currentIndex]
+        let delta = (duration - segment.duration)
+        let current = currentDuration
+        guard current + delta <= maxDuration else {
+            segment.duration = maxDuration - current
+            return
+        }
+        segment.duration = duration
+        print("\(currentDuration)")
+        setNeedsLayout()
+    }
+    
+    public func updateSegment(delta: TimeInterval) {
+        let segment = segments[currentIndex]
+        let current = currentDuration
+        guard current + delta <= maxDuration else {
+            segment.duration = maxDuration - current
+            return
+        }
+        segment.duration += delta
+        print("\(currentDuration)")
+        setNeedsLayout()
+    }
+    
+    public func closeSegment() {
+        let segment = segments[currentIndex]
+        segment.isOpened = false
     }
 }
 
@@ -215,7 +247,7 @@ fileprivate class SSegment {
     var isOpened: Bool = false {
         didSet {
             if isOpened {
-                layer.strokeEnd = 0.0
+                layer.strokeEnd = 1.0
                 separator.layer.strokeEnd = 0.0
             } else {
                 layer.strokeEnd = 1.0

@@ -21,8 +21,21 @@ class ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        segmentRecordingView.setInitialSegments(durations: [1.0, 1.5])
+        segmentRecordingView.setInitialSegments(durations: [1.0])
         segmentRecordingView.startAnimation()
+        
+        var duration: TimeInterval = 0.0
+        segmentRecordingView.startNewSegment()
+        let timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
+            duration += 0.1
+            self.segmentRecordingView.updateSegment(duration: duration)
+        }
+        
+        DispatchQueue.main.asyncAfter(wallDeadline: .now() + 3) {
+            timer.invalidate()
+            self.segmentRecordingView.closeSegment()
+        }
+        
     }
 
     override func didReceiveMemoryWarning() {
