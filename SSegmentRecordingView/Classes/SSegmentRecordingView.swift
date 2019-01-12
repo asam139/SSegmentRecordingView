@@ -13,33 +13,57 @@ import UIKit
     
     @objc public var segmentsDuration:[TimeInterval] = [] {
         didSet {
-            for segment in segments {
-                segment.view.removeFromSuperview()
-                segment.separator.view.removeFromSuperview()
-            }
-            segments.removeAll()
+            // Clear old views
+            clearSegments()
             
-            for _ in segmentsDuration {
+            // Create segments and sepators
+            var time: TimeInterval = 0
+            for (_, duration) in segmentsDuration.enumerated() {
+                if (maxDuration < time + duration) {
+                    break;
+                }
+                time += duration
+                
                 let segment = SSegment()
                 addSubview(segment.view)
                 segments.append(segment)
+                
+                let separator = SSeparator()
+                addSubview(separator.view)
+                separators.append(separator)
             }
+            
+            // Bring separators to front
+            separators.forEach { (separator) in
+                separator.view.superview?.bringSubviewToFront(separator.view)
+            }
+            
+            // Set current to last
+            currentIndex = segmentsDuration.count > 0 ? segmentsDuration.count - 1 : 0
+            
             updateColors()
             
             setNeedsLayout()
         }
     }
     
+    @objc public var currentDuration : TimeInterval {
+        return segmentsDuration.reduce(0, +)
+    }
     
-    var topColor = UIColor.gray {
+    @objc public var segmentColor = UIColor.cyan {
         didSet {
-            updateColors()
+            updateSegmentColors()
         }
     }
     
+    @objc public var separatorColor = UIColor.white {
+        didSet {
+            updateSeparatorColors()
+        }
+    }
     
-    
-    var padding: CGFloat = 2.0
+    private var separatorWidth: CGFloat = 2.5
     var isPaused: Bool = false {
         didSet {
             if isPaused {
@@ -50,7 +74,7 @@ import UIKit
                     layer.timeOffset = pausedTime
                 }
             } else {
-                let segment = segments[currentAnimationIndex]
+                let segment = segments[currentIndex]
                 let layer = segment.view.layer
                 let pausedTime = layer.timeOffset
                 layer.speed = 1.0
@@ -62,10 +86,10 @@ import UIKit
         }
     }
     
-    private var segments = [SSegment]()
     private var maxDuration: TimeInterval = 5.0
-    private var currentAnimationIndex = 0
-    
+    private var segments = [SSegment]()
+    private var separators = [SSeparator]()
+    private var currentIndex = 0
     
     // MARK: - Initializers
     
@@ -83,6 +107,7 @@ import UIKit
     
     private func configure() {
         self.backgroundColor = UIColor.init(white: 1.0, alpha: 0.25)
+        self.layer.masksToBounds = true
         self.layer.cornerRadius = 0.5 * self.bounds.height
     }
     
@@ -94,15 +119,64 @@ import UIKit
             let percent = CGFloat(segmentsDuration[index]/maxDuration)
             let width = frame.width * percent
             let segFrame = CGRect(x: xOffset, y: 0, width: width, height: frame.height)
-            xOffset += width
-            segment.width = width
             segment.view.frame = segFrame
+            //segment.view.layer.cornerRadius = 0.5 * frame.height
             
-            let cr = frame.height / 2
-            segment.view.layer.cornerRadius = cr
+            xOffset += width
+            
+            let sepFrame = CGRect(x: xOffset - 0.5 * separatorWidth, y: 0, width: separatorWidth, height: frame.height)
+            let separator = separators[index]
+            separator.view.frame = sepFrame
         }
-        
     }
+    
+    //MARK: -  Segments
+    
+    private func clearSegments() {
+        for segment in segments {
+            segment.view.removeFromSuperview()
+        }
+        segments.removeAll()
+    }
+    
+    
+    
+    //MARK: -  Separator
+    
+    private func clearSeparators() {
+        for separator in separators {
+            separator.view.removeFromSuperview()
+        }
+        separators.removeAll()
+    }
+    
+    //MARK: -
+    
+    private func clearAll() {
+        clearSegments()
+        clearSeparators()
+    }
+    
+    //MARK: - Colors
+    private func updateSegmentColors() {
+        for segment in segments {
+            segment.view.backgroundColor = segmentColor
+        }
+    }
+    
+    private func updateSeparatorColors() {
+        for separator in separators {
+            separator.view.backgroundColor = separatorColor
+        }
+    }
+    
+    private func updateColors() {
+        updateSegmentColors()
+        updateSeparatorColors()
+    }
+    
+    
+    //MARK: -
     
     public func startAnimation() {
         layoutSubviews()
@@ -110,8 +184,12 @@ import UIKit
     }
     
     private func animate(animationIndex: Int = 0) {
+        guard animationIndex < segments.count else {
+            return
+        }
+        
         let nextSegment = segments[animationIndex]
-        currentAnimationIndex = animationIndex
+        currentIndex = animationIndex
         self.isPaused = false // no idea why we have to do this here, but it fixes everything :D
         
 
@@ -120,7 +198,7 @@ import UIKit
         let anim = CABasicAnimation(keyPath: "bounds.size.width")
         anim.duration = 2
         anim.fromValue = 0
-        anim.toValue = nextSegment.width
+        anim.toValue = nextSegment.view.frame.width
         
         CATransaction.setCompletionBlock { [weak self] in
             self?.next()
@@ -130,36 +208,31 @@ import UIKit
         CATransaction.commit()
     }
     
-    private func updateColors() {
-        for segment in segments {
-            segment.view.backgroundColor = topColor
-        }
-    }
-    
+
     private func next() {
-        let newIndex = self.currentAnimationIndex + 1
-        if newIndex < self.segments.count {
-            self.animate(animationIndex: newIndex)
+        let newIndex = currentIndex + 1
+        if newIndex < segments.count {
+            animate(animationIndex: newIndex)
         } else {
     
         }
     }
     
     func skip() {
-        let currentSegment = segments[currentAnimationIndex]
-        currentSegment.view.frame.size.width = currentSegment.width
+        let currentSegment = segments[currentIndex]
+        currentSegment.view.frame.size.width = currentSegment.view.frame.width
         currentSegment.view.layer.removeAllAnimations()
         self.next()
     }
     
     func rewind() {
-        let currentSegment = segments[currentAnimationIndex]
+        let currentSegment = segments[currentIndex]
         currentSegment.view.layer.removeAllAnimations()
         currentSegment.view.frame.size.width = 0
-        let newIndex = max(currentAnimationIndex - 1, 0)
+        let newIndex = max(currentIndex - 1, 0)
         let prevSegment = segments[newIndex]
         prevSegment.view.frame.size.width = 0
-        self.animate(animationIndex: newIndex)
+        animate(animationIndex: newIndex)
     }
     
     
@@ -167,10 +240,6 @@ import UIKit
 
 fileprivate class SSegment {
     let view = UIView()
-    var duration: CGFloat = 0.0
-    var width: CGFloat = 0.0
-    
-    let separator = SSeparator()
     init() {
         view.layer.anchorPoint = CGPoint(x: 0, y: 0.5)
     }
@@ -178,7 +247,6 @@ fileprivate class SSegment {
 
 fileprivate class SSeparator {
     let view = UIView()
-    var width: CGFloat = 1.0
     init() {
         
     }
