@@ -21,6 +21,7 @@ class ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        segmentRecordingView.segmentsDuration = [1.0, 2.0, 3.0]
         segmentRecordingView.startAnimation()
     }
 
