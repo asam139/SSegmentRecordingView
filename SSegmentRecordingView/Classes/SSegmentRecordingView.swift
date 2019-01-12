@@ -89,10 +89,12 @@ import UIKit
     override public func layoutSubviews() {
         super.layoutSubviews()
  
-        
-        let width = (frame.width - (padding * CGFloat(segments.count - 1)) ) / CGFloat(segments.count)
+        var xOffset: CGFloat = 0
         for (index, segment) in segments.enumerated() {
-            let segFrame = CGRect(x: CGFloat(index) * (width + padding), y: 0, width: width, height: frame.height)
+            let percent = CGFloat(segmentsDuration[index]/maxDuration)
+            let width = frame.width * percent
+            let segFrame = CGRect(x: xOffset, y: 0, width: width, height: frame.height)
+            xOffset += width
             segment.width = width
             segment.view.frame = segFrame
             
@@ -117,11 +119,6 @@ import UIKit
         
         let anim = CABasicAnimation(keyPath: "bounds.size.width")
         anim.duration = 2
-        
-        var fromBounds = nextSegment.view.bounds
-        fromBounds.size.width = 0
-        var toBounds = nextSegment.view.bounds
-        toBounds.size.width = nextSegment.width
         anim.fromValue = 0
         anim.toValue = nextSegment.width
         
