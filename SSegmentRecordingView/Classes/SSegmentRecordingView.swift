@@ -204,7 +204,7 @@ import UIKit
         anim.duration = segment.duration
         anim.fromValue = 0.0
         anim.toValue = 1.0
-        segment.layer.add(anim, forKey: "bounds")
+        segment.layer.add(anim, forKey: "strokeEnd")
         CATransaction.commit()
     }
     
