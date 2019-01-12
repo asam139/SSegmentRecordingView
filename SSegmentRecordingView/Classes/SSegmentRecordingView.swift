@@ -29,13 +29,10 @@ import UIKit
                 segments.append(segment)
                 
                 let separator = SSeparator()
-                addSubview(separator.view)
+                separator.layer.lineWidth = separatorWidth
+                separator.layer.zPosition = 10
+                layer.addSublayer(separator.layer)
                 separators.append(separator)
-            }
-            
-            // Bring separators to front
-            separators.forEach { (separator) in
-                separator.view.superview?.bringSubviewToFront(separator.view)
             }
             
             // Set current to last
@@ -63,7 +60,7 @@ import UIKit
         }
     }
     
-    private var separatorWidth: CGFloat = 2.5
+    
     var isPaused: Bool = false {
         didSet {
             if isPaused {
@@ -89,6 +86,13 @@ import UIKit
     private var maxDuration: TimeInterval = 5.0
     private var segments = [SSegment]()
     private var separators = [SSeparator]()
+    private var separatorWidth: CGFloat = 2.5 {
+        didSet {
+            for separator in separators {
+                separator.layer.lineWidth = separatorWidth
+            }
+        }
+    }
     private var currentIndex = 0 {
         didSet {
             for (index, _) in segmentsDuration.enumerated() {
@@ -125,6 +129,7 @@ import UIKit
     }
     
     override public func layoutSublayers(of layer: CALayer) {
+        super.layoutSublayers(of: layer)
         
         var xOffset: CGFloat = 0
         for (index, segment) in segments.enumerated() {
@@ -134,16 +139,22 @@ import UIKit
             segment.layer.lineWidth = frame.height
             segment.layer.frame = layer.bounds
             
+            // Segment path
+            let finalXOffset = xOffset + width
+            
             let bezierPath = UIBezierPath()
             bezierPath.move(to: CGPoint(x: xOffset, y: 0.5 * frame.height))
-            bezierPath.addLine(to: CGPoint(x: xOffset + width, y: 0.5 * frame.height))
+            bezierPath.addLine(to: CGPoint(x: finalXOffset, y: 0.5 * frame.height))
             segment.layer.path = bezierPath.cgPath
             
-            xOffset += width
-            
-            let sepFrame = CGRect(x: xOffset - 0.5 * separatorWidth, y: 0, width: separatorWidth, height: frame.height)
+            // Segment path
+            bezierPath.removeAllPoints()
+            bezierPath.move(to: CGPoint(x: finalXOffset, y: 0))
+            bezierPath.addLine(to: CGPoint(x: finalXOffset, y: frame.height))
             let separator = separators[index]
-            separator.view.frame = sepFrame
+            separator.layer.path = bezierPath.cgPath
+            
+            xOffset = finalXOffset
         }
     }
     
@@ -163,7 +174,7 @@ import UIKit
     
     private func clearSeparators() {
         for separator in separators {
-            separator.view.removeFromSuperview()
+            separator.layer.removeFromSuperlayer()
         }
         separators.removeAll()
     }
@@ -184,7 +195,7 @@ import UIKit
     
     private func updateSeparatorColors() {
         for separator in separators {
-            separator.view.backgroundColor = separatorColor
+            separator.layer.strokeColor = separatorColor.cgColor
         }
     }
     
@@ -262,9 +273,9 @@ fileprivate class SSegment {
 }
 
 fileprivate class SSeparator {
-    let view = UIView()
+    let layer = CAShapeLayer()
     init() {
-        
+        layer.fillColor = UIColor.clear.cgColor
     }
 }
 
