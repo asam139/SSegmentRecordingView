@@ -195,11 +195,13 @@ import UIKit
         currentIndex = animationIndex
         
         let segment = segments[currentIndex]
+        // Update model layer tree to final value
+        segment.layer.strokeEnd = 1.0
+        
         CATransaction.begin()
         CATransaction.setCompletionBlock { [weak self] in
             self?.next()
         }
-        
         let anim = CABasicAnimation(keyPath: "strokeEnd")
         anim.duration = segment.duration
         anim.fromValue = 0.0
