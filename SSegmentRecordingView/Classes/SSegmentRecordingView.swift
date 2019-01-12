@@ -37,7 +37,7 @@ import UIKit
             }
             
             // Set current to last
-            currentIndex = segmentsDuration.count > 0 ? segmentsDuration.count - 1 : 0
+            currentIndex = segmentsDuration.count > 0 ? segmentsDuration.count : 0
             
             updateColors()
             
@@ -193,7 +193,7 @@ import UIKit
     //MARK: - Animate
     
     public func startAnimation() {
-        animate()
+        //animate()
     }
     
     private func animate(animationIndex: Int = 0) {
@@ -215,6 +215,18 @@ import UIKit
         anim.toValue = 1.0
         segment.layer.add(anim, forKey: "bounds")
         CATransaction.commit()
+    }
+    
+    private func startSegment() {
+        
+    }
+    
+    func updateSegment(duration: TimeInterval) {
+        
+    }
+    
+    func closeSegment() {
+        
     }
     
     private func next() {
