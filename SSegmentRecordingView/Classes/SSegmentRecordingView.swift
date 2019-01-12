@@ -10,45 +10,6 @@ import UIKit
 @objc public class SSegmentRecordingView: UIView {
     
     // MARK: - Public
-    
-    @objc public var segmentsDuration:[TimeInterval] = [] {
-        didSet {
-            // Clear old views
-            clearSegments()
-            
-            // Create segments and sepators
-            var time: TimeInterval = 0
-            for (_, duration) in segmentsDuration.enumerated() {
-                if (maxDuration < time + duration) {
-                    break;
-                }
-                time += duration
-                
-                let segment = SSegment()
-                let separator = SSeparator()
-                separator.layer.lineWidth = separatorWidth
-                segment.separator = separator
-                
-                segments.append(segment)
-                separators.append(separator)
-                
-                layer.addSublayer(segment.layer)
-                layer.addSublayer(separator.layer)
-            }
-            
-            // Set current to last
-            currentIndex = segmentsDuration.count > 0 ? segmentsDuration.count : 0
-            
-            updateColors()
-            
-            setNeedsLayout()
-        }
-    }
-    
-    @objc public var currentDuration : TimeInterval {
-        return segmentsDuration.reduce(0, +)
-    }
-    
     @objc public var segmentColor = UIColor.cyan {
         didSet {
             updateSegmentColors()
@@ -59,6 +20,44 @@ import UIKit
         didSet {
             updateSeparatorColors()
         }
+    }
+    
+    @objc public func setInitialSegments(durations:[TimeInterval]) {
+        // Clear old views
+        clearSegments()
+        
+        // Create segments and sepators
+        var time: TimeInterval = 0
+        for (_, duration) in durations.enumerated() {
+            if (maxDuration < time + duration) {
+                break;
+            }
+            time += duration
+            
+            let segment = SSegment(duration: duration)
+            let separator = SSeparator()
+            separator.layer.lineWidth = separatorWidth
+            segment.separator = separator
+            
+            segments.append(segment)
+            separators.append(separator)
+            
+            layer.addSublayer(segment.layer)
+            layer.addSublayer(separator.layer)
+        }
+        
+        // Set current to last
+        currentIndex = durations.count
+        
+        updateColors()
+        
+        setNeedsLayout()
+    }
+    
+    @objc public var currentDuration : TimeInterval {
+        return segments.reduce(0, { (result, segment) in
+            return result + segment.duration
+        })
     }
     
     // MARK: - Private
@@ -75,8 +74,7 @@ import UIKit
     }
     private var currentIndex = 0 {
         didSet {
-            for (index, _) in segmentsDuration.enumerated() {
-                let segment = segments[index]
+            for (index, segment) in segments.enumerated() {
                 if (index <= currentIndex) {
                     segment.layer.strokeEnd = 1.0
                 } else {
@@ -118,7 +116,7 @@ import UIKit
         
         var xOffset: CGFloat = 0
         for (index, segment) in segments.enumerated() {
-            let percent = CGFloat(segmentsDuration[index]/maxDuration)
+            let percent = CGFloat(segment.duration/maxDuration)
             let width = frame.width * percent
             
             segment.layer.lineWidth = frame.height
@@ -142,7 +140,6 @@ import UIKit
             xOffset = finalXOffset
         }
     }
-    
     
     //MARK: -  Segments
     
@@ -193,12 +190,12 @@ import UIKit
     //MARK: - Animate
     
     public func startAnimation() {
-        //animate()
+        animate()
     }
     
     private func animate(animationIndex: Int = 0) {
-        guard animationIndex < segmentsDuration.count else {
-            currentIndex = animationIndex <= segmentsDuration.count ? currentIndex + 1 : segmentsDuration.count
+        guard animationIndex < segments.count else {
+            currentIndex = animationIndex <= segments.count ? currentIndex + 1 : segments.count
             return
         }
         currentIndex = animationIndex
@@ -210,7 +207,7 @@ import UIKit
         }
         
         let anim = CABasicAnimation(keyPath: "strokeEnd")
-        anim.duration = segmentsDuration[animationIndex]
+        anim.duration = segment.duration
         anim.fromValue = 0.0
         anim.toValue = 1.0
         segment.layer.add(anim, forKey: "bounds")
@@ -236,9 +233,11 @@ import UIKit
 }
 
 fileprivate class SSegment {
+    var duration: TimeInterval = 0.0
     let layer = CAShapeLayer()
     weak var separator: SSeparator?
-    init() {
+    init(duration: TimeInterval = 0.0) {
+        self.duration = duration
         layer.fillColor = UIColor.clear.cgColor
     }
 }
