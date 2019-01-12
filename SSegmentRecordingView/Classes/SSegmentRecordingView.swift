@@ -35,14 +35,12 @@ import UIKit
             time += duration
             
             let segment = SSegment(duration: duration)
-            let separator = SSeparator()
-            separator.layer.lineWidth = separatorWidth
+            segment.separator.layer.lineWidth = separatorWidth
             
             segments.append(segment)
-            separators.append(separator)
             
             layer.addSublayer(segment.layer)
-            layer.addSublayer(separator.layer)
+            layer.addSublayer(segment.separator.layer)
         }
         updateColors()
         
@@ -60,26 +58,20 @@ import UIKit
     
     private var maxDuration: TimeInterval = 5.0
     private var segments = [SSegment]()
-    private var separators = [SSeparator]()
     private var separatorWidth: CGFloat = 2.5 {
         didSet {
-            for separator in separators {
-                separator.layer.lineWidth = separatorWidth
+            segments.forEach { (segment) in
+                segment.separator.layer.lineWidth = separatorWidth
             }
         }
     }
     private var currentIndex = 0 {
         didSet {
             for (index, segment) in segments.enumerated() {
-                let separator = separators[index]
                 if (index < currentIndex) {
                     segment.isOpened = false
-                    segment.layer.strokeEnd = 1.0
-                    separator.layer.strokeEnd = 1.0
                 } else {
                     segment.isOpened = true
-                    segment.layer.strokeEnd = 0.0
-                    separator.layer.strokeEnd = 0.0
                 }
             }
         }
@@ -109,7 +101,7 @@ import UIKit
         super.layoutSublayers(of: layer)
         
         var xOffset: CGFloat = 0
-        for (index, segment) in segments.enumerated() {
+        for segment in segments {
             let percent = CGFloat(segment.duration/maxDuration)
             let width = frame.width * percent
             
@@ -128,8 +120,7 @@ import UIKit
             bezierPath.removeAllPoints()
             bezierPath.move(to: CGPoint(x: finalXOffset, y: 0))
             bezierPath.addLine(to: CGPoint(x: finalXOffset, y: frame.height))
-            let separator = separators[index]
-            separator.layer.path = bezierPath.cgPath
+            segment.separator.layer.path = bezierPath.cgPath
             
             xOffset = finalXOffset
         }
@@ -142,36 +133,24 @@ import UIKit
             segment.layer.removeFromSuperlayer()
         }
         segments.removeAll()
-    }
-    
-    
-    
-    //MARK: -  Separator
-    
-    private func clearSeparators() {
-        for separator in separators {
-            separator.layer.removeFromSuperlayer()
+        
+        segments.forEach { (segment) in
+            segment.layer.removeFromSuperlayer()
+            segment.separator.layer.removeFromSuperlayer()
         }
-        separators.removeAll()
     }
     
-    //MARK: -
-    
-    private func clearAll() {
-        clearSegments()
-        clearSeparators()
-    }
     
     //MARK: - Colors
     private func updateSegmentColors() {
-        for segment in segments {
+        segments.forEach { (segment) in
             segment.layer.strokeColor = segmentColor.cgColor
         }
     }
     
     private func updateSeparatorColors() {
-        for separator in separators {
-            separator.layer.strokeColor = separatorColor.cgColor
+        segments.forEach { (segment) in
+            segment.separator.layer.strokeColor = separatorColor.cgColor
         }
     }
     
@@ -189,7 +168,6 @@ import UIKit
     
     private func animate(animationIndex: Int = 0) {
         guard animationIndex < segments.count else {
-            currentIndex = animationIndex <= segments.count ? currentIndex + 1 : segments.count
             return
         }
         currentIndex = animationIndex
@@ -200,6 +178,7 @@ import UIKit
         
         CATransaction.begin()
         CATransaction.setCompletionBlock { [weak self] in
+            segment.isOpened = false
             self?.next()
         }
         let anim = CABasicAnimation(keyPath: "strokeEnd")
@@ -210,7 +189,7 @@ import UIKit
         CATransaction.commit()
     }
     
-    private func startSegment() {
+    private func startNewSegment() {
         
     }
     
@@ -231,10 +210,23 @@ import UIKit
 fileprivate class SSegment {
     var duration: TimeInterval = 0.0
     let layer = CAShapeLayer()
-    var isOpened: Bool = false
+    let separator: SSeparator = SSeparator()
+    
+    var isOpened: Bool = false {
+        didSet {
+            if isOpened {
+                layer.strokeEnd = 0.0
+                separator.layer.strokeEnd = 0.0
+            } else {
+                layer.strokeEnd = 1.0
+                separator.layer.strokeEnd = 1.0
+            }
+        }
+    }
     
     init(duration: TimeInterval = 0.0) {
         self.duration = duration
+        isOpened = false
         layer.fillColor = UIColor.clear.cgColor
     }
 }
