@@ -63,9 +63,9 @@ import UIKit
             for (index, segment) in segments.enumerated() {
                 segment.layer.removeAllAnimations()
                 if (index < currentIndex) {
-                    segment.isOpened = false
+                    segment.state = .closed
                 } else {
-                    segment.isOpened = true
+                    segment.state = .opened
                 }
             }
         }
@@ -159,13 +159,13 @@ import UIKit
         return segment
     }
     
-    public func startNewSegment() {
+    @objc public func startNewSegment() {
         let segment = newSegment(duration: 0.0)
-        segment.isOpened = true
+        segment.state = .opened
         currentIndex = segments.count - 1
     }
     
-    public func updateSegment(duration: TimeInterval) {
+    @objc public func updateSegment(duration: TimeInterval) {
         var duration = duration
         let segment = segments[currentIndex]
         let delta = (duration - segment.duration)
@@ -199,14 +199,19 @@ import UIKit
         CATransaction.commit()
     }
     
-    public func updateSegment(delta: TimeInterval) {
+    @objc public func updateSegment(delta: TimeInterval) {
         let segment = segments[currentIndex]
         updateSegment(duration: segment.duration + delta)
     }
     
-    public func closeSegment() {
+    @objc public func pauseSegment() {
         let segment = segments[currentIndex]
-        segment.isOpened = false
+        segment.state = .paused
+    }
+    
+    @objc public func closeSegment() {
+        let segment = segments[currentIndex]
+        segment.state = .closed
     }
     
     //MARK: - Paths
@@ -248,26 +253,48 @@ import UIKit
     }
 }
 
+/// An enum to control the segment status.
+fileprivate enum SSegmentState : Int {
+    /// Segment is closed
+    case closed
+    /// Segment is opened
+    case opened
+    /// Segment is paused.
+    case paused
+}
+
 fileprivate class SSegment {
     var duration: TimeInterval = 0.0
     let layer = CAShapeLayer()
     let separator: SSeparator = SSeparator()
     
-    var isOpened: Bool = false {
+    var state: SSegmentState = .closed {
         didSet {
-            if isOpened {
-                layer.strokeEnd = 1.0
-                separator.layer.strokeEnd = 0.0
-            } else {
+            
+            switch state {
+            case .closed:
                 layer.strokeEnd = 1.0
                 separator.layer.strokeEnd = 1.0
+                separator.isBlinking = false
+                break
+            case .opened:
+                layer.strokeEnd = 1.0
+                separator.layer.strokeEnd = 0.0
+                separator.isBlinking = false
+                break
+            case .paused:
+                layer.strokeEnd = 1.0
+                separator.layer.strokeEnd = 1.0
+                separator.isBlinking = true
+                
+                break
             }
         }
     }
     
     init(duration: TimeInterval = 0.0) {
         self.duration = duration
-        isOpened = false
+        state = .closed
         layer.fillColor = UIColor.clear.cgColor
     }
 }
@@ -277,6 +304,34 @@ fileprivate class SSeparator {
     init() {
         layer.fillColor = UIColor.clear.cgColor
         layer.zPosition = 10
+    }
+    
+    var isBlinking: Bool = false {
+        didSet {
+            if !isBlinking {
+                layer.removeAllAnimations()
+                layer.opacity = 1.0
+                return
+            }
+            
+            let fadeOut = CABasicAnimation(keyPath: "opacity")
+            fadeOut.fromValue = 1
+            fadeOut.toValue = 0.1
+            fadeOut.duration = 1
+            
+            let fadeIn = CABasicAnimation(keyPath: "opacity")
+            fadeIn.fromValue = 0.1
+            fadeIn.toValue = 1
+            fadeIn.duration = 1
+            fadeIn.beginTime = 1
+            
+            let group = CAAnimationGroup()
+            group.duration = 1
+            group.repeatCount = Float.infinity
+            group.animations = [fadeOut, fadeIn]
+            
+            layer.add(group, forKey: "blink")
+        }
     }
 }
 
