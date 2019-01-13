@@ -264,6 +264,7 @@ fileprivate enum SSegmentState : Int {
 }
 
 fileprivate class SSegment {
+    //MARK: - Properties
     var duration: TimeInterval = 0.0
     let layer = CAShapeLayer()
     let separator: SSeparator = SSeparator()
@@ -292,6 +293,8 @@ fileprivate class SSegment {
         }
     }
     
+    //MARK: - Initializers
+    
     init(duration: TimeInterval = 0.0) {
         self.duration = duration
         state = .closed
@@ -300,38 +303,53 @@ fileprivate class SSegment {
 }
 
 fileprivate class SSeparator {
+    //MARK: - Properties
     let layer = CAShapeLayer()
+    
+    //MARK: - Initializers
+    
     init() {
         layer.fillColor = UIColor.clear.cgColor
         layer.zPosition = 10
     }
     
+    //MARK: - Blink
+    
+    var blinkDuration: TimeInterval = 2.0 {
+        didSet {
+            updateBlinking()
+        }
+    }
     var isBlinking: Bool = false {
         didSet {
-            if !isBlinking {
-                layer.removeAllAnimations()
-                layer.opacity = 1.0
-                return
-            }
-            
-            let fadeOut = CABasicAnimation(keyPath: "opacity")
-            fadeOut.fromValue = 1
-            fadeOut.toValue = 0.1
-            fadeOut.duration = 1
-            
-            let fadeIn = CABasicAnimation(keyPath: "opacity")
-            fadeIn.fromValue = 0.1
-            fadeIn.toValue = 1
-            fadeIn.duration = 1
-            fadeIn.beginTime = 1
-            
-            let group = CAAnimationGroup()
-            group.duration = 1
-            group.repeatCount = Float.infinity
-            group.animations = [fadeOut, fadeIn]
-            
-            layer.add(group, forKey: "blink")
+            updateBlinking()
         }
+    }
+    
+    private func updateBlinking() {
+        if !isBlinking {
+            layer.removeAllAnimations()
+            layer.opacity = 1.0
+            return
+        }
+        
+        let fadeOut = CABasicAnimation(keyPath: "opacity")
+        fadeOut.fromValue = 1
+        fadeOut.toValue = 0.1
+        fadeOut.duration = 0.5 * blinkDuration
+        
+        let fadeIn = CABasicAnimation(keyPath: "opacity")
+        fadeIn.fromValue = 0.1
+        fadeIn.toValue = 1
+        fadeIn.duration = 0.5 * blinkDuration
+        fadeIn.beginTime = 0.5 * blinkDuration
+        
+        let group = CAAnimationGroup()
+        group.duration = blinkDuration
+        group.repeatCount = Float.infinity
+        group.animations = [fadeOut, fadeIn]
+        
+        layer.add(group, forKey: "blink")
     }
 }
 
