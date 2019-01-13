@@ -64,7 +64,7 @@ public class SSegmentRecordingView: UIView {
         }
         
         // Set current to last
-        currentIndex = durations.count
+        currentIndex = durations.count > 0 ? durations.count - 1 : 0
     }
     
     /**
@@ -128,6 +128,10 @@ public class SSegmentRecordingView: UIView {
         A method that starts a new segment
     **/
     @objc public func startNewSegment() {
+        if currentDuration >= maxDuration {
+            return
+        }
+        
         let segment = newSegment(duration: 0.0)
         segment.state = .opened
         currentIndex = segments.count - 1
@@ -139,16 +143,20 @@ public class SSegmentRecordingView: UIView {
         - Parameter duration: new value duration
     **/
     @objc public func updateSegment(duration: TimeInterval) {
+        guard currentIndex < segments.count else {
+            return
+        }
+        
+        let current = currentDuration
+        if current >= maxDuration {
+            // Reached max
+            return
+        }
+        
         var duration = duration
         let segment = segments[currentIndex]
         let delta = (duration - segment.duration)
-        let current = currentDuration
-        
-        if current >= maxDuration {
-            // Reached max
-            print("Reached max: \(currentDuration)")
-            return
-        } else if current + delta >= maxDuration {
+        if current + delta >= maxDuration {
             // Adjust to get exact max duration
             duration += maxDuration - current - delta
             segment.duration = duration
@@ -182,6 +190,10 @@ public class SSegmentRecordingView: UIView {
         - Parameter delta: delta value which can be positive or negative
     **/
     @objc public func updateSegment(delta: TimeInterval) {
+        guard currentIndex < segments.count else {
+            return
+        }
+        
         let segment = segments[currentIndex]
         updateSegment(duration: segment.duration + delta)
     }
@@ -190,7 +202,14 @@ public class SSegmentRecordingView: UIView {
         A method to pause segment showing a blink animation
     **/
     @objc public func pauseSegment() {
+        guard currentIndex < segments.count else {
+            return
+        }
+        
         let segment = segments[currentIndex]
+        guard segment.state == .opened else {
+            return
+        }
         segment.state = .paused
     }
     
@@ -198,7 +217,16 @@ public class SSegmentRecordingView: UIView {
         A method to close segment and start new one
      **/
     @objc public func closeSegment() {
+        guard currentIndex < segments.count else {
+            return
+        }
+        
         let segment = segments[currentIndex]
+        guard segment.state == .opened ||
+              segment.state == .paused else {
+            return
+        }
+        
         segment.state = .closed
     }
     
