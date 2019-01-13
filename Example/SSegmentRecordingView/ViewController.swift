@@ -25,14 +25,22 @@ class ViewController: UIViewController {
         
         var duration: TimeInterval = 0.0
         segmentRecordingView.startNewSegment()
-        let timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
+        var timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
             duration += 0.1
             self.segmentRecordingView.updateSegment(duration: duration)
         }
+        timer.fire()
         
         DispatchQueue.main.asyncAfter(wallDeadline: .now() + 1.0) {
             timer.invalidate()
             self.segmentRecordingView.pauseSegment()
+        }
+        
+        DispatchQueue.main.asyncAfter(wallDeadline: .now() + 2.0) {
+            timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
+                duration += 0.1
+                self.segmentRecordingView.updateSegment(duration: duration)
+            }
         }
         
         DispatchQueue.main.asyncAfter(wallDeadline: .now() + 5) {
