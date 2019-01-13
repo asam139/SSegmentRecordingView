@@ -11,7 +11,7 @@ import UIKit
     //MARK: - Public objects
     
     /**
-        Segment color. Default is `.cyan`
+        A color to fill segments. Default is `.cyan`,
     **/
     @objc public var segmentColor = #colorLiteral(red: 0, green: 0.9914394021, blue: 1, alpha: 1) {
         didSet {
@@ -20,7 +20,7 @@ import UIKit
     }
 
     /**
-        Separator color. Default is `.white`.
+        A color to fill separators. Default is `.white`.
     **/
     @objc public var separatorColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0) {
         didSet {
@@ -29,9 +29,20 @@ import UIKit
     }
     
     /**
-        Set up initial segments
+        A float to change line width for separators. Default is `2.5`.
+    **/
+    @objc public var separatorWidth: CGFloat = 2.5 {
+        didSet {
+            segments.forEach { (segment) in
+                segment.separator.layer.lineWidth = separatorWidth
+            }
+        }
+    }
+    
+    /**
+        Set up initial segments.
 
-        - Parameter durations: initial time of each segment
+        - Parameter durations: initial time of each segment.
     **/
     @objc public func setInitialSegments(durations:[TimeInterval]) {
         // Clear old views
@@ -52,7 +63,6 @@ import UIKit
         currentIndex = durations.count
     }
     
-    
     /**
         Get current total duration (sum of all segments)
     **/
@@ -60,30 +70,6 @@ import UIKit
         return segments.reduce(0, { (result, segment) in
             return result + segment.duration
         })
-    }
-    
-    // MARK: - Private
-    
-    private var maxDuration: TimeInterval = 5.0
-    private var segments = [SSegment]()
-    private var separatorWidth: CGFloat = 2.5 {
-        didSet {
-            segments.forEach { (segment) in
-                segment.separator.layer.lineWidth = separatorWidth
-            }
-        }
-    }
-    private var currentIndex = 0 {
-        didSet {
-            for (index, segment) in segments.enumerated() {
-                segment.layer.removeAllAnimations()
-                if (index < currentIndex) {
-                    segment.state = .closed
-                } else {
-                    segment.state = .opened
-                }
-            }
-        }
     }
     
     //MARK: - Public initialization methods
@@ -116,14 +102,38 @@ import UIKit
         self.layer.cornerRadius = 0.5 * self.bounds.height
     }
     
+    // MARK: - Private
+    private var maxDuration: TimeInterval = 5.0
+    private var segments = [SSegment]()
+    private var currentIndex = 0 {
+        didSet {
+            for (index, segment) in segments.enumerated() {
+                segment.layer.removeAllAnimations()
+                if (index < currentIndex) {
+                    segment.state = .closed
+                } else {
+                    segment.state = .opened
+                }
+            }
+        }
+    }
+    
     //MARK: - Public methods for start, update, pause and close segments
     
+    /**
+        A method that starts a new segment
+    **/
     @objc public func startNewSegment() {
         let segment = newSegment(duration: 0.0)
         segment.state = .opened
         currentIndex = segments.count - 1
     }
     
+    /**
+        A method to update segment's duration
+
+        - Parameter duration: new value duration
+    **/
     @objc public func updateSegment(duration: TimeInterval) {
         var duration = duration
         let segment = segments[currentIndex]
@@ -158,16 +168,27 @@ import UIKit
         CATransaction.commit()
     }
     
+    /**
+        A method to update segment's duration using a delta value
+
+        - Parameter delta: delta value which can be positive or negative
+    **/
     @objc public func updateSegment(delta: TimeInterval) {
         let segment = segments[currentIndex]
         updateSegment(duration: segment.duration + delta)
     }
     
+    /**
+        A method to pause segment showing a blink animation
+    **/
     @objc public func pauseSegment() {
         let segment = segments[currentIndex]
         segment.state = .paused
     }
     
+    /**
+        A method to close segment and start new one
+     **/
     @objc public func closeSegment() {
         let segment = segments[currentIndex]
         segment.state = .closed
