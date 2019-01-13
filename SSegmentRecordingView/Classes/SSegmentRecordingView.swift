@@ -211,12 +211,12 @@ import UIKit
     
     //MARK: - Paths
     
-    private func pathsAt(index: Int) -> (segment: CGPath, separator: CGPath)? {
+    private func pathsAt(index: Int) -> PathsTupla? {
         guard index < segments.count else {
             return nil
         }
         
-        var paths:(segment: CGPath, separator: CGPath)? = nil
+        var paths:PathsTupla? = nil
         var xOffset: CGFloat = 0
         for (i, segment) in segments.enumerated() {
             let width = frame.width * CGFloat(segment.duration/maxDuration)
@@ -232,7 +232,7 @@ import UIKit
         return paths
     }
     
-    private func pathsForPoints(initX: CGFloat, finalX: CGFloat) -> (segment: CGPath, separator: CGPath) {
+    private func pathsForPoints(initX: CGFloat, finalX: CGFloat) -> PathsTupla {
         let bezierPath = UIBezierPath()
         bezierPath.move(to: CGPoint(x: initX, y: 0.5 * frame.height))
         bezierPath.addLine(to: CGPoint(x: finalX, y: 0.5 * frame.height))
@@ -279,5 +279,7 @@ fileprivate class SSeparator {
         layer.zPosition = 10
     }
 }
+
+fileprivate typealias PathsTupla = (segment: CGPath, separator: CGPath)
 
 
