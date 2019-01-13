@@ -147,8 +147,12 @@ import UIKit
         } else if current + delta >= maxDuration {
             // Adjust to get exact max duration
             duration += maxDuration - current - delta
+            segment.duration = duration
+            segment.state = .closed
+        } else {
+            segment.duration = duration
+            segment.state = .opened
         }
-        segment.duration = duration
         
         guard let newPaths = pathsAt(index: currentIndex) else {
             return
