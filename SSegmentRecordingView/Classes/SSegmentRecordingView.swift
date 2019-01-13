@@ -217,8 +217,25 @@ import UIKit
             return
         }
         segment.duration = duration
+        
+        let newPaths = pathsAt(index: currentIndex)
+        let oldSegPath = segment.layer.path
+        let oldSepPath = segment.separator.layer.path
+        
+        // Update model layer tree to final value
+        segment.layer.path = newPaths.segment
+        segment.separator.layer.path = newPaths.separator
+        
+        CATransaction.begin()
+        let anim = CABasicAnimation(keyPath: "path")
+        anim.duration = delta
+        anim.fromValue = oldSegPath
+        anim.toValue = newPaths.segment
+        segment.layer.add(anim, forKey: "path")
+        CATransaction.commit()
+        
         print("\(currentDuration)")
-        setNeedsLayout()
+        
     }
     
     public func updateSegment(delta: TimeInterval) {
@@ -229,13 +246,58 @@ import UIKit
             return
         }
         segment.duration += delta
+        
+        let newPaths = pathsAt(index: currentIndex)
+        let oldSegPath = segment.layer.path
+        
+        // Update model layer tree to final value
+        segment.layer.path = newPaths.segment
+        segment.separator.layer.path = newPaths.separator
+        
+        CATransaction.begin()
+        let anim = CABasicAnimation(keyPath: "path")
+        anim.duration = delta
+        anim.fromValue = oldSegPath
+        anim.toValue = newPaths.segment
+        segment.layer.add(anim, forKey: "path")
+        CATransaction.commit()
+        
         print("\(currentDuration)")
-        setNeedsLayout()
     }
     
     public func closeSegment() {
         let segment = segments[currentIndex]
         segment.isOpened = false
+    }
+    
+    //MARK: - Paths
+    
+    private func pathsAt(index: Int) -> (segment: CGPath?, separator: CGPath?) {
+        var segmentPath: CGPath? = nil
+        var separatorPath: CGPath? = nil
+        var xOffset: CGFloat = 0
+        for (i, segment) in segments.enumerated() {
+            let width = frame.width * CGFloat(segment.duration/maxDuration)
+            // Segment path
+            let finalXOffset = xOffset + width
+            if (index == i) {
+                let bezierPath = UIBezierPath()
+                bezierPath.move(to: CGPoint(x: xOffset, y: 0.5 * frame.height))
+                bezierPath.addLine(to: CGPoint(x: finalXOffset, y: 0.5 * frame.height))
+                segmentPath = bezierPath.cgPath
+                
+                // Segment path
+                bezierPath.removeAllPoints()
+                bezierPath.move(to: CGPoint(x: finalXOffset, y: 0))
+                bezierPath.addLine(to: CGPoint(x: finalXOffset, y: frame.height))
+                separatorPath = bezierPath.cgPath
+                
+                break
+            }
+            xOffset = finalXOffset
+        }
+        
+        return (segmentPath!, separatorPath!)
     }
 }
 
