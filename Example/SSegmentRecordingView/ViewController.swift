@@ -31,7 +31,7 @@ class ViewController: UIViewController {
             self.segmentRecordingView.updateSegment(duration: duration)
         }
         
-        DispatchQueue.main.asyncAfter(wallDeadline: .now() + 3) {
+        DispatchQueue.main.asyncAfter(wallDeadline: .now() + 5) {
             timer.invalidate()
             self.segmentRecordingView.closeSegment()
         }
