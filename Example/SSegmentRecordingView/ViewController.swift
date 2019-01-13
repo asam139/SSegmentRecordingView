@@ -22,7 +22,6 @@ class ViewController: UIViewController {
         super.viewDidAppear(animated)
         
         segmentRecordingView.setInitialSegments(durations: [1.0])
-        segmentRecordingView.startAnimation()
         
         var duration: TimeInterval = 0.0
         segmentRecordingView.startNewSegment()

@@ -103,20 +103,11 @@ import UIKit
             segment.layer.frame = layer.bounds
             
             // Segment path
-            let finalXOffset = xOffset + width
+            let paths = pathsForPoints(initX: xOffset, finalX: xOffset + width)
+            segment.layer.path = paths.segment
+            segment.separator.layer.path = paths.separator
             
-            let bezierPath = UIBezierPath()
-            bezierPath.move(to: CGPoint(x: xOffset, y: 0.5 * frame.height))
-            bezierPath.addLine(to: CGPoint(x: finalXOffset, y: 0.5 * frame.height))
-            segment.layer.path = bezierPath.cgPath
-            
-            // Segment path
-            bezierPath.removeAllPoints()
-            bezierPath.move(to: CGPoint(x: finalXOffset, y: 0))
-            bezierPath.addLine(to: CGPoint(x: finalXOffset, y: frame.height))
-            segment.separator.layer.path = bezierPath.cgPath
-            
-            xOffset = finalXOffset
+            xOffset += width
         }
     }
     
@@ -190,7 +181,9 @@ import UIKit
         }
         segment.duration = duration
         
-        let newPaths = pathsAt(index: currentIndex)
+        guard let newPaths = pathsAt(index: currentIndex) else {
+            return
+        }
         let oldSegPath = segment.layer.path
         
         // Update model layer tree to final value
@@ -218,32 +211,40 @@ import UIKit
     
     //MARK: - Paths
     
-    private func pathsAt(index: Int) -> (segment: CGPath?, separator: CGPath?) {
-        var segmentPath: CGPath? = nil
-        var separatorPath: CGPath? = nil
+    private func pathsAt(index: Int) -> (segment: CGPath, separator: CGPath)? {
+        guard index < segments.count else {
+            return nil
+        }
+        
+        var paths:(segment: CGPath, separator: CGPath)? = nil
         var xOffset: CGFloat = 0
         for (i, segment) in segments.enumerated() {
             let width = frame.width * CGFloat(segment.duration/maxDuration)
             // Segment path
             let finalXOffset = xOffset + width
             if (index == i) {
-                let bezierPath = UIBezierPath()
-                bezierPath.move(to: CGPoint(x: xOffset, y: 0.5 * frame.height))
-                bezierPath.addLine(to: CGPoint(x: finalXOffset, y: 0.5 * frame.height))
-                segmentPath = bezierPath.cgPath
-                
-                // Segment path
-                bezierPath.removeAllPoints()
-                bezierPath.move(to: CGPoint(x: finalXOffset, y: 0))
-                bezierPath.addLine(to: CGPoint(x: finalXOffset, y: frame.height))
-                separatorPath = bezierPath.cgPath
-                
+                paths = pathsForPoints(initX: xOffset, finalX: finalXOffset)
                 break
             }
             xOffset = finalXOffset
         }
         
-        return (segmentPath!, separatorPath!)
+        return paths
+    }
+    
+    private func pathsForPoints(initX: CGFloat, finalX: CGFloat) -> (segment: CGPath, separator: CGPath) {
+        let bezierPath = UIBezierPath()
+        bezierPath.move(to: CGPoint(x: initX, y: 0.5 * frame.height))
+        bezierPath.addLine(to: CGPoint(x: finalX, y: 0.5 * frame.height))
+        let segmentPath = bezierPath.cgPath
+        
+        // Segment path
+        bezierPath.removeAllPoints()
+        bezierPath.move(to: CGPoint(x: finalX, y: 0))
+        bezierPath.addLine(to: CGPoint(x: finalX, y: frame.height))
+        let separatorPath = bezierPath.cgPath
+        
+        return (segmentPath, separatorPath)
     }
 }
 
