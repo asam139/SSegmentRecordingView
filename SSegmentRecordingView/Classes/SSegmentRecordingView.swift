@@ -7,13 +7,15 @@
 
 import UIKit
 
-@objc public class SSegmentRecordingView: UIView {
+@IBDesignable @objc
+public class SSegmentRecordingView: UIView {
     //MARK: - Public objects
     
     /**
         A color to fill segments. Default is `.cyan`,
     **/
-    @objc public var segmentColor = #colorLiteral(red: 0, green: 0.9914394021, blue: 1, alpha: 1) {
+    @objc @IBInspectable
+    public var segmentColor: UIColor = #colorLiteral(red: 0, green: 0.9914394021, blue: 1, alpha: 1) {
         didSet {
             updateSegmentColors()
         }
@@ -22,7 +24,8 @@ import UIKit
     /**
         A color to fill separators. Default is `.white`.
     **/
-    @objc public var separatorColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0) {
+    @objc @IBInspectable
+    public var separatorColor: UIColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0) {
         didSet {
             updateSeparatorColors()
         }
@@ -31,7 +34,8 @@ import UIKit
     /**
         A float to change line width for separators. Default is `2.5`.
     **/
-    @objc public var separatorWidth: CGFloat = 2.5 {
+    @objc @IBInspectable
+    public var separatorWidth: CGFloat = 2.5 {
         didSet {
             segments.forEach { (segment) in
                 segment.separator.layer.lineWidth = separatorWidth
