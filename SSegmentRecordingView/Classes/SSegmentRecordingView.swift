@@ -153,40 +153,6 @@ import UIKit
         updateSeparatorColors()
     }
     
-    //MARK: - Animate
-    
-    public func startAnimation() {
-        //animate()
-    }
-    
-    private func animate(animationIndex: Int = 0) {
-        guard animationIndex < segments.count else {
-            return
-        }
-        currentIndex = animationIndex
-        
-        let segment = segments[currentIndex]
-        // Update model layer tree to final value
-        segment.layer.strokeEnd = 1.0
-        
-        CATransaction.begin()
-        CATransaction.setCompletionBlock { [weak self] in
-            segment.isOpened = false
-            self?.next()
-        }
-        let anim = CABasicAnimation(keyPath: "strokeEnd")
-        anim.duration = segment.duration
-        anim.fromValue = 0.0
-        anim.toValue = 1.0
-        segment.layer.add(anim, forKey: "strokeEnd")
-        CATransaction.commit()
-    }
-    
-    private func next() {
-        let newIndex = currentIndex + 1
-        animate(animationIndex: newIndex)
-    }
-    
     //MARK: - Segments
     
     private func newSegment(duration: TimeInterval = 0.0) -> SSegment {
@@ -215,9 +181,11 @@ import UIKit
         let current = currentDuration
         
         if current >= maxDuration {
+            // Reached max
             print("Reached max: \(currentDuration)")
             return
         } else if current + delta >= maxDuration {
+            // Adjust to get exact max duration
             duration += maxDuration - current - delta
         }
         segment.duration = duration
