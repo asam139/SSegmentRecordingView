@@ -240,29 +240,7 @@ import UIKit
     
     public func updateSegment(delta: TimeInterval) {
         let segment = segments[currentIndex]
-        let current = currentDuration
-        guard current + delta <= maxDuration else {
-            segment.duration = maxDuration - current
-            return
-        }
-        segment.duration += delta
-        
-        let newPaths = pathsAt(index: currentIndex)
-        let oldSegPath = segment.layer.path
-        
-        // Update model layer tree to final value
-        segment.layer.path = newPaths.segment
-        segment.separator.layer.path = newPaths.separator
-        
-        CATransaction.begin()
-        let anim = CABasicAnimation(keyPath: "path")
-        anim.duration = delta
-        anim.fromValue = oldSegPath
-        anim.toValue = newPaths.segment
-        segment.layer.add(anim, forKey: "path")
-        CATransaction.commit()
-        
-        print("\(currentDuration)")
+        updateSegment(duration: segment.duration + delta)
     }
     
     public func closeSegment() {
