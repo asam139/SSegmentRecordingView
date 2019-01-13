@@ -14,6 +14,7 @@ Pod::Spec.new do |s|
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'asam139' => '93sauu@gmail.com' }
   s.source           = { :git => 'https://github.com/asam139/SSegmentRecordingView.git', :tag => s.version.to_s }
+  s.swift_version = '4.2'
   s.ios.deployment_target = '11.3'
 
   s.source_files = 'SSegmentRecordingView/Classes/**/*'
