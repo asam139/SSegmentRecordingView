@@ -152,7 +152,7 @@ public class SSegmentRecordingView: UIView {
             // Adjust to get exact max duration
             duration += maxDuration - current - delta
             segment.duration = duration
-            segment.state = .closed
+            segment.state = .final
         } else {
             segment.duration = duration
             segment.state = .opened
@@ -313,6 +313,8 @@ fileprivate enum SSegmentState : Int {
     case opened
     /// Segment is paused.
     case paused
+    /// Segment is final.
+    case final
 }
 
 fileprivate class SSegment {
@@ -339,7 +341,10 @@ fileprivate class SSegment {
                 layer.strokeEnd = 1.0
                 separator.layer.strokeEnd = 1.0
                 separator.isBlinking = true
-                
+            case .final:
+                layer.strokeEnd = 1.0
+                separator.layer.strokeEnd = 0.0
+                separator.isBlinking = false
                 break
             }
         }
