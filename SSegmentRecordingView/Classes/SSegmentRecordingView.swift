@@ -253,15 +253,11 @@ public class SSegmentRecordingView: UIView {
     
     //MARK: -  Segments utils
     private func clearSegments() {
-        for segment in segments {
-            segment.layer.removeFromSuperlayer()
-        }
-        segments.removeAll()
-        
         segments.forEach { (segment) in
             segment.layer.removeFromSuperlayer()
             segment.separator.layer.removeFromSuperlayer()
         }
+        segments.removeAll()
     }
     
     private func newSegment(duration: TimeInterval = 0.0) -> SSegment {
