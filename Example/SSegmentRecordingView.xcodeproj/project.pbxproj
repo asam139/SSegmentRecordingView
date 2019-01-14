@@ -213,10 +213,12 @@
 				TargetAttributes = {
 					607FACCF1AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
+						DevelopmentTeam = U96GUE2A6L;
 						LastSwiftMigration = 1010;
 					};
 					607FACE41AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
+						DevelopmentTeam = U96GUE2A6L;
 						LastSwiftMigration = 1010;
 						TestTargetID = 607FACCF1AFB9204008FA782;
 					};
@@ -499,6 +501,7 @@
 			baseConfigurationReference = 143FF7E8D053C849560FD0C8 /* Pods-SSegmentRecordingView_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = U96GUE2A6L;
 				INFOPLIST_FILE = SSegmentRecordingView/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -514,6 +517,7 @@
 			baseConfigurationReference = 2A08884174AE623E4A67FF62 /* Pods-SSegmentRecordingView_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = U96GUE2A6L;
 				INFOPLIST_FILE = SSegmentRecordingView/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -528,6 +532,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 42674065EF35383A0EF57855 /* Pods-SSegmentRecordingView_Tests.debug.xcconfig */;
 			buildSettings = {
+				DEVELOPMENT_TEAM = U96GUE2A6L;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -550,6 +555,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 911A75EB58F1B6F4EA416E55 /* Pods-SSegmentRecordingView_Tests.release.xcconfig */;
 			buildSettings = {
+				DEVELOPMENT_TEAM = U96GUE2A6L;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",

@@ -27,6 +27,11 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="10" id="Guv-lj-8Pb"/>
                                 </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="maxDuration">
+                                        <real key="value" value="10"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                             </view>
                         </subviews>
                         <color key="backgroundColor" red="0.97254901959999995" green="0.69803921570000005" blue="0.24313725489999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

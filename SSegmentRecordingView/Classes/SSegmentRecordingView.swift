@@ -11,6 +11,13 @@ import UIKit
 public class SSegmentRecordingView: UIView {
     //MARK: - Public objects
     
+    @objc @IBInspectable
+    public var maxDuration: Double = 5.0 {
+        didSet {
+            setInitialSegments(durations: [])
+        }
+    }
+    
     /**
         A color to fill segments. Default is `.cyan`,
     **/
@@ -48,12 +55,12 @@ public class SSegmentRecordingView: UIView {
 
         - Parameter durations: initial time of each segment.
     **/
-    @objc public func setInitialSegments(durations:[TimeInterval]) {
+    @objc public func setInitialSegments(durations:[Double]) {
         // Clear old views
         clearSegments()
         
         // Create segments and sepators
-        var time: TimeInterval = 0
+        var time: Double = 0
         for (_, duration) in durations.enumerated() {
             if (maxDuration < time + duration) {
                 break;
@@ -70,7 +77,7 @@ public class SSegmentRecordingView: UIView {
     /**
         Get current total duration (sum of all segments)
     **/
-    @objc public var currentDuration : TimeInterval {
+    @objc public var currentDuration : Double {
         return segments.reduce(0, { (result, segment) in
             return result + segment.duration
         })
@@ -78,7 +85,7 @@ public class SSegmentRecordingView: UIView {
     
     //MARK: - Public initialization methods
     
-    @objc public init(frame: CGRect = CGRect.zero, duration: TimeInterval = 5.0) {
+    @objc public init(frame: CGRect = CGRect.zero, duration: Double = 5.0) {
         super.init(frame: frame)
         self.maxDuration = duration
         configure()
@@ -107,7 +114,6 @@ public class SSegmentRecordingView: UIView {
     }
     
     // MARK: - Private
-    private var maxDuration: TimeInterval = 5.0
     private var segments = [SSegment]()
     private var currentIndex = 0 {
         didSet {
@@ -142,7 +148,7 @@ public class SSegmentRecordingView: UIView {
 
         - Parameter duration: new value duration
     **/
-    @objc public func updateSegment(duration: TimeInterval) {
+    @objc public func updateSegment(duration: Double) {
         guard currentIndex < segments.count else {
             return
         }
@@ -189,7 +195,7 @@ public class SSegmentRecordingView: UIView {
 
         - Parameter delta: delta value which can be positive or negative
     **/
-    @objc public func updateSegment(delta: TimeInterval) {
+    @objc public func updateSegment(delta: Double) {
         guard currentIndex < segments.count else {
             return
         }
@@ -260,7 +266,7 @@ public class SSegmentRecordingView: UIView {
         segments.removeAll()
     }
     
-    private func newSegment(duration: TimeInterval = 0.0) -> SSegment {
+    private func newSegment(duration: Double = 0.0) -> SSegment {
         let segment = SSegment(duration: duration)
         segment.separator.layer.lineWidth = separatorWidth
         segment.layer.strokeColor = segmentColor.cgColor
@@ -343,7 +349,7 @@ fileprivate enum SSegmentState : Int {
 
 fileprivate class SSegment {
     //MARK: - Properties
-    var duration: TimeInterval = 0.0
+    var duration: Double = 0.0
     let layer = CAShapeLayer()
     let separator: SSeparator = SSeparator()
     
@@ -376,7 +382,7 @@ fileprivate class SSegment {
     
     //MARK: - Initializers
     
-    init(duration: TimeInterval = 0.0) {
+    init(duration: Double = 0.0) {
         self.duration = duration
         state = .closed
         layer.fillColor = UIColor.clear.cgColor
@@ -396,7 +402,7 @@ fileprivate class SSeparator {
     
     //MARK: - Blink
     
-    var blinkDuration: TimeInterval = 2.0 {
+    var blinkDuration: Double = 2.0 {
         didSet {
             updateBlinking()
         }
@@ -416,11 +422,11 @@ fileprivate class SSeparator {
         
         let fadeOut = CABasicAnimation(keyPath: "opacity")
         fadeOut.fromValue = 1
-        fadeOut.toValue = 0.1
+        fadeOut.toValue = 0.5
         fadeOut.duration = 0.5 * blinkDuration
         
         let fadeIn = CABasicAnimation(keyPath: "opacity")
-        fadeIn.fromValue = 0.1
+        fadeIn.fromValue = 0.5
         fadeIn.toValue = 1
         fadeIn.duration = 0.5 * blinkDuration
         fadeIn.beginTime = 0.5 * blinkDuration
