@@ -7,7 +7,7 @@
 
 import UIKit
 
-@IBDesignable @objc
+@objc @IBDesignable
 public class SSegmentRecordingView: UIView {
     //MARK: - Public objects
     
