@@ -75,19 +75,19 @@ public class SSegmentRecordingView: UIView {
     }
     
     /**
+     Get segments count
+     **/
+    @objc public var segmentsCount : Int {
+        return segments.count
+    }
+    
+    /**
         Get current total duration (sum of all segments)
     **/
     @objc public var currentDuration : Double {
         return segments.reduce(0, { (result, segment) in
             return result + segment.duration
         })
-    }
-    
-    /**
-     Get segments count
-     **/
-    @objc public var segmentsCount : Int {
-        return segments.count
     }
     
     //MARK: - Public initialization methods
@@ -259,6 +259,25 @@ public class SSegmentRecordingView: UIView {
         if (currentIndex >= count) {
             currentIndex = count + 1
         }
+    }
+    
+    /**
+     Get duration of a segment
+     **/
+    @objc public func segmentDurationAt(index: Int) -> Double {
+        guard currentIndex < segments.count else {
+            return 0.0
+        }
+        
+        let segment = segments[index]
+        return segment.duration
+    }
+    
+    /**
+     Get duration of current segment
+     **/
+    @objc public var currentSegmentDuration: Double {
+        return segmentDurationAt(index: currentIndex)
     }
     
     //MARK: - Layout sublayers
