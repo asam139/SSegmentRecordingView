@@ -70,8 +70,8 @@ public class SSegmentRecordingView: UIView {
             _ = newSegment(duration: duration)
         }
         
-        // Set current to last
-        currentIndex = durations.count > 0 ? durations.count - 1 : 0
+        // Set current index out of array
+        currentIndex = durations.count
     }
     
     /**
@@ -154,7 +154,7 @@ public class SSegmentRecordingView: UIView {
         }
         
         let current = currentDuration
-        if current >= maxDuration {
+        guard current < maxDuration else {
             // Reached max
             return
         }
@@ -220,7 +220,7 @@ public class SSegmentRecordingView: UIView {
     }
     
     /**
-        A method to close segment and start new one
+        A method to close segment
      **/
     @objc public func closeSegment() {
         guard currentIndex < segments.count else {
@@ -234,6 +234,24 @@ public class SSegmentRecordingView: UIView {
         }
         
         segment.state = .closed
+    }
+    
+    /**
+     A method to remove current segment
+     **/
+    @objc public func removeSegment() {
+        guard currentIndex < segments.count else {
+            return
+        }
+        
+        // Clear segment
+        clearSegmentAtIndex(index: currentIndex)
+        
+        // Adjust current index
+        let count = segments.count
+        if (currentIndex >= count) {
+            currentIndex = count + 1
+        }
     }
     
     //MARK: - Layout sublayers
@@ -264,6 +282,15 @@ public class SSegmentRecordingView: UIView {
             segment.separator.layer.removeFromSuperlayer()
         }
         segments.removeAll()
+    }
+    
+    private func clearSegmentAtIndex(index: Int) {
+        guard index < segments.count else {
+            return
+        }
+        let segment = segments.remove(at: index)
+        segment.layer.removeFromSuperlayer()
+        segment.separator.layer.removeFromSuperlayer()
     }
     
     private func newSegment(duration: Double = 0.0) -> SSegment {
