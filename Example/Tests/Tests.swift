@@ -8,11 +8,20 @@ class SSegmentRecordingViewSpec: QuickSpec {
     override func spec() {
         describe("a segment view") {
             var segmentView: SSegmentRecordingView!
-            beforeEach {
-                segmentView = SSegmentRecordingView()
+        
+            
+            it("is initialized correctly with max duration") {
+                let maxDuration = 10.0
+                segmentView = SSegmentRecordingView(frame: CGRect(x: 0, y: 0, width: 100, height: 8), duration: maxDuration)
+                expect(segmentView.maxDuration) == maxDuration
             }
             
             describe("when starts") {
+                beforeEach {
+                    segmentView = SSegmentRecordingView()
+                    segmentView.setInitialSegments(durations: [])
+                }
+                
                 it("is empty") {
                     let count = segmentView.segmentsCount;
                     expect(count) == 0
@@ -22,9 +31,37 @@ class SSegmentRecordingViewSpec: QuickSpec {
                     let duration = segmentView.currentDuration;
                     expect(duration) == 0
                 }
+                
+                it("is max duration can be changed") {
+                    let maxDuration = 10.0;
+                    segmentView.maxDuration = maxDuration
+                    expect(segmentView.maxDuration) == maxDuration
+                }
+                
+                it("is segment color can be changed") {
+                    let color = #colorLiteral(red: 1, green: 0.2705882353, blue: 0.2274509804, alpha: 1);
+                    segmentView.segmentColor = color
+                    expect(segmentView.segmentColor) == color
+                }
+                
+                it("is sepator color can be changed") {
+                    let color = #colorLiteral(red: 1, green: 0.8392156863, blue: 0.03921568627, alpha: 1);
+                    segmentView.separatorColor = color
+                    expect(segmentView.separatorColor) == color
+                }
+                
+                it("is sepator width can be changed") {
+                    let newWidth: CGFloat = 3.0;
+                    segmentView.separatorWidth = newWidth
+                    expect(segmentView.separatorWidth) == newWidth
+                }
+                
             }
             
             describe("when is initialized") {
+                beforeEach {
+                    segmentView = SSegmentRecordingView()
+                }
                 
                 context("when durations is smaller than max duration") {
                     let maxDuration = 10.0
@@ -65,6 +102,8 @@ class SSegmentRecordingViewSpec: QuickSpec {
             describe("when starts a new segment") {
                 var oldCount:Int!
                 beforeEach {
+                    segmentView = SSegmentRecordingView()
+                    
                     oldCount = segmentView.segmentsCount
                     segmentView.startNewSegment()
                 }
@@ -121,6 +160,11 @@ class SSegmentRecordingViewSpec: QuickSpec {
                 it("can be removed") {
                     segmentView.removeSegment()
                     expect(segmentView.segmentsCount) == oldCount
+                }
+                
+                it("can be reseted") {
+                    segmentView.setInitialSegments(durations: [])
+                    expect(segmentView.segmentsCount) == 0
                 }
                 
             }
