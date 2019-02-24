@@ -280,6 +280,25 @@ public class SSegmentRecordingView: UIView {
         return segmentDurationAt(index: currentIndex)
     }
     
+    /**
+     Get state of a segment
+     **/
+    @objc public func segmentStateAt(index: Int) -> SSegmentState {
+        guard currentIndex < segments.count else {
+            return .closed
+        }
+        
+        let segment = segments[index]
+        return segment.state
+    }
+    
+    /**
+     Get duration of current segment
+     **/
+    @objc public var currentSegmentState: SSegmentState {
+        return segmentStateAt(index: currentIndex)
+    }
+    
     //MARK: - Layout sublayers
     override public func layoutSublayers(of layer: CALayer) {
         super.layoutSublayers(of: layer)
@@ -389,7 +408,7 @@ public class SSegmentRecordingView: UIView {
     }
 }
 
-fileprivate enum SSegmentState : Int {
+@objc public enum SSegmentState : Int {
     /// Segment is closed
     case closed
     /// Segment is opened
