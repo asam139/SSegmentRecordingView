@@ -14,7 +14,6 @@ class SSegmentRecordingViewSpec: QuickSpec {
             
             describe("when starts") {
                 it("is empty") {
-                    print("aaaaa")
                     let count = segmentView.segmentsCount;
                     expect(count) == 0
                 }
@@ -25,37 +24,56 @@ class SSegmentRecordingViewSpec: QuickSpec {
                 }
             }
             
-            describe("when is iniatilazed") {
-                let durations = [1.0, 2.0]
-                beforeEach {
-                    segmentView.setInitialSegments(durations: durations)
+            describe("when is initialized") {
+                
+                context("when durations is smaller than max duration") {
+                    let maxDuration = 10.0
+                    let durations = [maxDuration / 5.0, maxDuration / 5.0] // 2 + 4 < 10
+                    beforeEach {
+                        segmentView.maxDuration = maxDuration
+                        segmentView.setInitialSegments(durations: durations)
+                    }
+                    
+                    it("its segments matched") {
+                        let count = segmentView.segmentsCount;
+                        expect(count) == durations.count
+                    }
+                    
+                    it("its duration matched") {
+                        let duration = segmentView.currentDuration;
+                        let totalDuration = durations.reduce(0, { (result, value) in
+                            result + value
+                        })
+                        expect(duration) == totalDuration
+                    }
                 }
                 
-                it("its segments matched") {
-                    let count = segmentView.segmentsCount;
-                    expect(count) == durations.count
-                }
-                
-                it("its duration matched") {
-                    let duration = segmentView.currentDuration;
-                    let totalDuration = durations.reduce(0, { (result, value) in
-                        result + value
-                    })
-                    expect(duration) == totalDuration
+                context("when durations is greater than max duration") {
+                    let maxDuration = 5.0
+                    let durations = [maxDuration / 2.0, maxDuration] // 2.5 + 5 > 5
+                    beforeEach {
+                        segmentView.maxDuration = maxDuration
+                        segmentView.setInitialSegments(durations: durations)
+                    }
+                    
+                    it("its duration is less than equal the max") {
+                        expect(segmentView.currentDuration) <= maxDuration
+                    }
                 }
             }
             
-            describe("when starts a new one") {
+            describe("when starts a new segment") {
                 var oldCount:Int!
                 beforeEach {
                     oldCount = segmentView.segmentsCount
                     segmentView.startNewSegment()
                 }
                 
-                it("its segments count increased") {
+                it("segments count increased") {
                     let count = segmentView.segmentsCount;
                     expect(count) == oldCount + 1
                 }
+                
                 
                 describe("can be updated") {
                     beforeEach {
@@ -77,6 +95,32 @@ class SSegmentRecordingViewSpec: QuickSpec {
                         expect(segmentView.currentSegmentDuration) == currentDuration + delta
                     }
                     
+                }
+                
+                describe("its state can be") {
+                    beforeEach {
+                         segmentView.updateSegment(duration: 1.0)
+                    }
+                    
+                    it("paused") {
+                        segmentView.pauseSegment()
+                        expect(segmentView.currentSegmentState) == .paused
+                    }
+                    
+                    it("closed") {
+                        segmentView.closeSegment()
+                        expect(segmentView.currentSegmentState) == .closed
+                    }
+                    
+                    it("final") {
+                        segmentView.updateSegment(duration: segmentView.maxDuration + 1)
+                        expect(segmentView.currentSegmentState) == .final
+                    }
+                }
+                
+                it("can be removed") {
+                    segmentView.removeSegment()
+                    expect(segmentView.segmentsCount) == oldCount
                 }
                 
             }
