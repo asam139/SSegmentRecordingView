@@ -83,6 +83,13 @@ public class SSegmentRecordingView: UIView {
         })
     }
     
+    /**
+     Get segments count
+     **/
+    @objc public var segmentsCount : Int {
+        return segments.count
+    }
+    
     //MARK: - Public initialization methods
     
     @objc public init(frame: CGRect = CGRect.zero, duration: Double = 5.0) {
