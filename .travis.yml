@@ -13,6 +13,7 @@ before_install:
 script:
   - set -o pipefail
   - cd Example
+  - pod install
   - xcodebuild -workspace SSegmentRecordingView.xcworkspace -scheme SSegmentRecordingView_Example -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO | xcpretty -c
   - xcodebuild test -workspace SSegmentRecordingView.xcworkspace -scheme SSegmentRecordingView_Tests -destination 'platform=iOS Simulator,name=iPhone XS,OS=12.0' | xcpretty -c
 after_success:
