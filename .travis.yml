@@ -12,7 +12,7 @@ before_install:
   - rvm install ruby-2.4.0
   - gem install xcpretty -N
   - gem install cocoapods
-  - pod update
+  - pod repo update
 script:
   - set -o pipefail
   - cd Example
