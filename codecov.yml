@@ -1,5 +1,3 @@
-codecov:
-  token: cf79dbe1-1e31-4e2e-ad9c-a640c08f683b
 coverage:
   ignore:
     - Example/*
