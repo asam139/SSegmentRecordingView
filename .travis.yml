@@ -19,4 +19,4 @@ script:
   - xcodebuild -workspace SSegmentRecordingView.xcworkspace -scheme SSegmentRecordingView_Example -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO | xcpretty -c
   - xcodebuild test -workspace SSegmentRecordingView.xcworkspace -scheme SSegmentRecordingView_Tests -destination 'platform=iOS Simulator,name=iPhone XS,OS=12.0' | xcpretty -c
 after_success:
-  - bash <(curl -s https://codecov.io/bash) -t cf79dbe1-1e31-4e2e-ad9c-a640c08f683b
+  - bash <(curl -s https://codecov.io/bash)
