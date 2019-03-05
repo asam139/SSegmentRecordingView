@@ -12,13 +12,3 @@ comment:
   layout: "header, diff, changes, tree"
   behavior: default
 
-ignore:
-  - "Example/.*"
-  - "Example"
-  - "Example/*"
-  - "SSegmentRecordingView"
-  - "Example/Tests"
-  - "Tests"
-  - "./Example/Tests"
-  - "./SSegmentRecordingView_Example.app.coverage.txt"
-  - "[a-z]+/_Test.*"  # regexp accepted
