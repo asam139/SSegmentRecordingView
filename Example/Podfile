@@ -5,6 +5,7 @@ target 'SSegmentRecordingView_Example' do
   pod 'SSegmentRecordingView', :path => '../'
 
   target 'SSegmentRecordingView_Tests' do
+    inhibit_all_warnings!
     inherit! :search_paths
 
     pod 'Quick', '~> 1.3.2'
