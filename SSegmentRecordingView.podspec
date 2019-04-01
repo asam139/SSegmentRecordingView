@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'SSegmentRecordingView'
-  s.version          = '0.1.3'
+  s.version          = '0.1.4'
   s.summary          = 'View to represent segments of video as Snapchat, Instagram or TikTok camera.'
   s.homepage         = 'https://github.com/asam139/SSegmentRecordingView'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
