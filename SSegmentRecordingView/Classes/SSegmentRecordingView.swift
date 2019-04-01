@@ -95,29 +95,35 @@ public class SSegmentRecordingView: UIView {
     @objc public init(frame: CGRect = CGRect.zero, duration: Double = 5.0) {
         super.init(frame: frame)
         self.maxDuration = duration
-        configure()
+        sharedInit()
     }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        configure()
+        sharedInit()
     }
     
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
-        configure()
+        sharedInit()
     }
     
     public convenience init() {
         self.init(frame: CGRect.zero)
-        configure()
+        sharedInit()
+    }
+    
+    override public func prepareForInterfaceBuilder() {
+        sharedInit()
     }
     
     //MARK: - Configure
-    private func configure() {
-        self.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0.251927594)
+    private func sharedInit() {
         self.layer.masksToBounds = true
         self.layer.cornerRadius = 0.5 * self.bounds.height
+        
+        updateSegmentColors()
+        updateSeparatorColors()
     }
     
     // MARK: - Private
