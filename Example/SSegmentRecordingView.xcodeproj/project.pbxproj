@@ -270,8 +270,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-SSegmentRecordingView_Tests/Pods-SSegmentRecordingView_Tests-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/FBSnapshotTestCase/FBSnapshotTestCase.framework",
+				"${PODS_ROOT}/Target Support Files/Pods-SSegmentRecordingView_Tests/Pods-SSegmentRecordingView_Tests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Nimble/Nimble.framework",
 				"${BUILT_PRODUCTS_DIR}/Nimble-Snapshots/Nimble_Snapshots.framework",
 				"${BUILT_PRODUCTS_DIR}/Quick/Quick.framework",
@@ -279,14 +278,14 @@
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSnapshotTestCase.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Nimble.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Nimble_Snapshots.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Quick.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSnapshotTestCase.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SSegmentRecordingView_Tests/Pods-SSegmentRecordingView_Tests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SSegmentRecordingView_Tests/Pods-SSegmentRecordingView_Tests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		0170C82024C9FF58E3484D6A /* [CP] Check Pods Manifest.lock */ = {
@@ -313,7 +312,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-SSegmentRecordingView_Example/Pods-SSegmentRecordingView_Example-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-SSegmentRecordingView_Example/Pods-SSegmentRecordingView_Example-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/SSegmentRecordingView/SSegmentRecordingView.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -322,7 +321,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SSegmentRecordingView_Example/Pods-SSegmentRecordingView_Example-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SSegmentRecordingView_Example/Pods-SSegmentRecordingView_Example-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		F368B5C91B85C8C56241ECCD /* [CP] Check Pods Manifest.lock */ = {
