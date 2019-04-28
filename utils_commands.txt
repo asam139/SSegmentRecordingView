@@ -1,0 +1,19 @@
+
+# Run test
+xcodebuild test -workspace Example/SSegmentRecordingView.xcworkspace -scheme SSegmentRecordingView_Tests -destination 'platform=iOS Simulator,name=iPhone 7,OS=12.2' -enableCodeCoverage YES VALID_ARCHS=x86_64 ONLY_ACTIVE_ARCH=NO -derivedDataPath ./DerivedData | xcpretty -c "--report" "html" "--output" "./ProjectReport.html"
+
+# To get report for Example
+slather coverage --html --verbose --output-directory ./Coverage \
+--workspace Example/SSegmentRecordingView.xcworkspace --scheme SSegmentRecordingView_Tests \
+--build-directory ./DerivedData \
+--binary-file ./DerivedData/Build/Products/Debug-iphonesimulator/SSegmentRecordingView_Example.app/SSegmentRecordingView_Example \
+Example/SSegmentRecordingView.xcodeproj
+
+# To get report for Framework
+slather coverage --html --verbose --output-directory ./Coverage \
+--workspace Example/SSegmentRecordingView.xcworkspace --scheme SSegmentRecordingView_Tests \
+--build-directory ./DerivedData \
+--binary-file ./DerivedData/Build/Products/Debug-iphonesimulator/SSegmentRecordingView/SSegmentRecordingView.framework/SSegmentRecordingView \
+Example/SSegmentRecordingView.xcodeproj
+
+
