@@ -1,4 +1,8 @@
-# SSegmentRecordingView
+
+<p align="center" >
+  <img src="https://raw.github.com/asam139/SSegmentRecordingView/assets/ssegmentrecordingview_logo.png" alt="SSegmentRecordingView" title="SSegmentRecordingView">
+</p>
+
 
 [![CI Status](https://img.shields.io/travis/asam139/SSegmentRecordingView.svg?style=flat)](https://travis-ci.org/asam139/SSegmentRecordingView)
 [![codecov](https://codecov.io/gh/asam139/SSegmentRecordingView/branch/master/graph/badge.svg)](https://codecov.io/gh/asam139/SSegmentRecordingView)
