@@ -1,0 +1,8 @@
+coverage_service: cobertura_xml
+workspace: Example/SSegmentRecordingView.xcworkspace
+xcodeproj: Example/SSegmentRecordingView.xcodeproj
+scheme: SSegmentRecordingView_Tests
+configuration: Debug
+output_directory: ./Coverage
+build_directory: ./DerivedData
+binary_file: ./DerivedData/Build/Products/Debug-iphonesimulator/SSegmentRecordingView/SSegmentRecordingView.framework/SSegmentRecordingView
