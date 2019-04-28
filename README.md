@@ -1,6 +1,6 @@
 
 <p align="center" >
-  <img src="https://raw.github.com/asam139/SSegmentRecordingView/assets/ssegmentrecordingview_logo.png" alt="SSegmentRecordingView" title="SSegmentRecordingView">
+  <img src="https://raw.github.com/asam139/SSegmentRecordingView/master/assets/ssegmentrecordingview_logo.png" alt="SSegmentRecordingView" title="SSegmentRecordingView">
 </p>
 
 
