@@ -14,6 +14,10 @@
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
+<p align="center" >
+  <img src="https://raw.github.com/asam139/SSegmentRecordingView/master/assets/example.gif" alt="SSegmentRecordingViewGif" title="SSegmentRecordingViewGif">
+</p>
+
 ## Installation
 ### Cocoapods
 1. Add this line to your project's `Podfile` (for Swift 5.0)
