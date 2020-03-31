@@ -14,21 +14,34 @@
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
-## Requirements
-
 ## Installation
-
-SSegmentRecordingView is available through [CocoaPods](https://cocoapods.org). To install
-it, simply add the following line to your Podfile:
-
-```ruby
+### Cocoapods
+1. Add this line to your project's `Podfile` (for Swift 5.0)
+```
 pod 'SSegmentRecordingView'
+
+```
+2. Install the pod
+```
+$ pod install
 ```
 
-## Author
+### Swift Package Manager (available Xcode 11.2 and forward)
 
-asam139, 93sauu@gmail.com
+1. In Xcode, select File > Swift Packages > Add Package Dependency.
+2. Follow the prompts using the URL for this repository.
+
+## Contributions
+If you have an idea for a new **SSegmentRecordingView** feature/functionality and want to add it to this repository, feel free to fork the project and create a pull request!
+
+Also, feel free to create an issue if you have any suggestions or need any help ☺️
 
 ## License
+### SSegmentRecordingView Framework
+Copyright 2020 Saúl Moreno Abril, 93sauu@gmail.com
 
-SSegmentRecordingView is available under the MIT license. See the LICENSE file for more info.
+`SSegmentRecordingView` is licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+[http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

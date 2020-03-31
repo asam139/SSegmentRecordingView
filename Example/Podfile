@@ -8,9 +8,9 @@ target 'SSegmentRecordingView_Example' do
     inhibit_all_warnings!
     inherit! :search_paths
 
-    pod 'Quick', '~> 2.1.0'
-    pod 'Nimble', '~> 8.0.1'
-    pod 'Nimble-Snapshots' , '~> 7.0.0'
+    pod 'Quick', '~> 2.2'
+    pod 'Nimble', '~> 8.0'
+    pod 'Nimble-Snapshots' , '~> 8.1'
 
   end
 end
