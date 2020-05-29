@@ -18,6 +18,42 @@ To run the example project, clone the repo, and run `pod install` from the Examp
   <img src="https://raw.github.com/asam139/SSegmentRecordingView/master/assets/example.gif" alt="SSegmentRecordingViewGif" title="SSegmentRecordingViewGif">
 </p>
 
+```swift
+// Set initials segments
+segmentRecordingView.setInitialSegments(durations: [1.0])
+
+// Start new segment
+var duration: TimeInterval = 0.0
+segmentRecordingView.startNewSegment()
+var timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
+    duration += 0.1
+    self.segmentRecordingView.updateSegment(duration: duration)
+}
+timer.fire()
+
+// Remove current segment
+DispatchQueue.main.asyncAfter(wallDeadline: .now() + 1.0) {
+    timer.invalidate()
+    self.segmentRecordingView.removeSegment()
+}
+
+// Start new segment
+DispatchQueue.main.asyncAfter(wallDeadline: .now() + 2.0) {
+    self.segmentRecordingView.startNewSegment()
+    duration = 0
+    timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
+        duration += 0.1
+        self.segmentRecordingView.updateSegment(duration: duration)
+    }
+}
+
+// Close current segment
+DispatchQueue.main.asyncAfter(wallDeadline: .now() + 5) {
+    timer.invalidate()
+    self.segmentRecordingView.closeSegment()
+}
+```
+
 ## Installation
 ### Cocoapods
 1. Add this line to your project's `Podfile` (for Swift 5.0)
